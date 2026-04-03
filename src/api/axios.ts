@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
   // تأكد من تغيير البورت حسب الباك إند عندك
-  baseURL: import.meta.env.VITE_API_URL || 'https://sentrykapi-86unvpa1.b4a.run',
+  baseURL: import.'https://sentrykapi-86unvpa1.b4a.run/api',
 });
 
 // إضافة التوكن لكل طلب يخرج من الفرونت إند
