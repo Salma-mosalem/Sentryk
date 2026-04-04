@@ -14,16 +14,14 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../store/useAuthStore'; // استيراد ستور المصادقة
+import { useAuthStore } from '../../store/useAuthStore'; 
 import { useThemeStore } from '../../store/useThemeStore';
+import api from "../../api/axios"; // استيراد الأكسيوس الذي يحتوي على الرابط الأساسي
 
 export default function Login() {
   const { darkMode, toggleTheme } = useThemeStore();
-  const setAuth = useAuthStore((state) => state.setAuth); // جلب دالة تعيين المصادقة
+  const setAuth = useAuthStore((state) => state.setAuth); 
   const navigate = useNavigate();
-  
-  // قراءة الرابط من .env أو الافتراضي 3000
-  const API_BASE_URL = "https://sentrykapi-l4vi8x0h.b4a.run";
 
   // States
   const [showPassword, setShowPassword] = useState(false);
@@ -40,27 +38,19 @@ export default function Login() {
     setError('');
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      // استخدام api.post مباشرة لجلب الرابط من إعدادات الأكسيوس
+      const response = await api.post('/auth/login', formData);
+      const data = response.data;
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'بيانات الدخول غير صحيحة');
-      }
-
-      // ✅ التعديل الأهم: تحديث الستور ببيانات المستخدم والتوكن والمركز
-      // ده بيخلي isAuthenticated تتحول لـ true ويفتح المسارات المحمية
+      // تحديث الستور ببيانات المستخدم والتوكن والمركز
       setAuth(data.user, data.token, data.center);
       
-      // التوجه لصفحة الخطط (Plans) لبدء الاشتراك أو التجديد
+      // التوجه لصفحة الخطط
       navigate('/plans'); 
       
     } catch (err: any) {
-      setError(err.message);
+      // التعامل مع الخطأ القادم من أكسيوس
+      setError(err.response?.data?.error || 'بيانات الدخول غير صحيحة أو حدث خطأ في السيرفر');
     } finally {
       setLoading(false);
     }
