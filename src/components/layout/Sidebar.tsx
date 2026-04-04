@@ -26,7 +26,7 @@ const menuItems = [
   { icon: <UserPlus size={20} />, label: ' المستخدمين', path: '/users', roles: ['ADMIN'] },
   { icon: <MessageSquare size={20} />, label: 'محفظة SMS', path: '/sms-wallet', roles: ['ADMIN'] },
   { icon: <History size={20} />, label: 'سجل النشاط', path: '/activity-log', roles: ['ADMIN'] },
-  { icon: <PhoneCall size={20} />, label: 'تواصل معنا', path: '/contact', roles: ['ADMIN', 'SECRETARY'] }, // الإضافة الجديدة
+  { icon: <PhoneCall size={20} />, label: 'تواصل معنا', path: '/contact-dash', roles: ['ADMIN', 'SECRETARY'] }, // الإضافة الجديدة
 ];
 
 export default function Sidebar() {
