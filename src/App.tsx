@@ -34,6 +34,7 @@ import Users from "./pages/dashboard/Users";
 import ActivityLog from "./pages/dashboard/Activity-Log";
 import Setting from "./pages/dashboard/Setting";
 import SmsWallet from "./pages/dashboard/SMS-Wallet";
+import Help from "./pages/dashboard/Contact-dash";
 
 function App() {
   const { darkMode } = useThemeStore();
@@ -109,18 +110,18 @@ function App() {
           element={
             !isAuthenticated ? (
               <Login />
-            ) : user?.role === "ADMIN" ? (
+              ) : user?.role === "ADMIN" ? (
               // الأدمن يوجه للداشبورد لو دافع، أو للخطط لو مش دافع
               isPaid ? (
                 <Navigate to="/dashboard" replace />
               ) : (
                 <Navigate to="/plans" replace />
               )
-            ) : (
-              // السكرتير يوجه دائماً لصفحة الطلاب (المسموحة له)
-              <Navigate to="/students" replace />
-            )
-          }
+              ) : (
+                // السكرتير يوجه دائماً لصفحة الطلاب (المسموحة له)
+                <Navigate to="/students" replace />
+              )
+            }
         />
         <Route
           path="/signup"
@@ -155,9 +156,9 @@ function App() {
         <Route
           element={
             <ProtectedRoute
-              requiresAuth={true}
-              requiresPaid={true} // السكرتير isPaid عنده true تلقائياً في الـ Store
-              allowedRoles={["ADMIN", "SECRETARY"]}
+            requiresAuth={true}
+            requiresPaid={true} // السكرتير isPaid عنده true تلقائياً في الـ Store
+            allowedRoles={["ADMIN", "SECRETARY"]}
             />
           }
         >
@@ -175,9 +176,10 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/subjects" element={<Subjects />} />
               <Route path="/users" element={<Users />} />
-              <Route path="/activity-log" element={<ActivityLog />} />
               <Route path="/settings" element={<Setting />} />
               <Route path="/sms-wallet" element={<SmsWallet />} />
+          <Route path="/activity-log" element={<ActivityLog />} />
+              <Route path="/contact-dash" element={<Help />} />
             </Route>
           </Route>
         </Route>
