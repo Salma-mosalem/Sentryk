@@ -1,22 +1,95 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
+  Activity,
   AlertCircle,
+  ArrowRightLeft,
   BookOpen,
-  CheckCircle2,
-  Clock,
+  CalendarClock,
   CreditCard,
   MessageSquare,
   TrendingDown,
   TrendingUp,
   Users,
-  Zap,
-  Activity,
-  ArrowRightLeft
+  UserX,
+  X,
+  Zap
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import api from '../../api/axios';
 
-// مكون الكارت الموحد بتصميم عصري
+// --- المكونات الفرعية ---
+
+// مكون النافذة المنبثقة (Modal)
+const StudentsModal = ({ isOpen, onClose, title, students, type }: any) => (
+  <AnimatePresence>
+    {isOpen && (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="absolute inset-0 bg-slate-950/60 backdrop-blur-md"
+        />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9, y: 20 }}
+          className="bg-white dark:bg-slate-900 w-full max-w-4xl max-h-[80vh] rounded-[3rem] shadow-2xl relative z-10 overflow-hidden border border-slate-200 dark:border-slate-800 flex flex-col"
+          dir="rtl"
+        >
+          {/* Header */}
+          <div className="p-6 md:p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/20">
+            <div className="flex items-center gap-4">
+              <div className={`p-3 rounded-2xl ${type === 'expiry' ? 'bg-rose-500/10 text-rose-600' : 'bg-slate-500/10 text-slate-600'}`}>
+                {type === 'expiry' ? <CalendarClock size={24} /> : <UserX size={24} />}
+              </div>
+              <div>
+                <h3 className="text-xl font-black dark:text-white">{title}</h3>
+                <p className="text-xs font-bold text-slate-500">إجمالي العدد: {students?.length || 0}</p>
+              </div>
+            </div>
+            <button 
+              onClick={onClose}
+              className="p-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-rose-50 hover:text-rose-600 transition-all shadow-sm"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-4">
+            {students && students.length > 0 ? (
+              students.map((student: any, idx: number) => (
+                <div key={idx} className="flex items-center justify-between p-5 rounded-3xl border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-primary-600/10 text-primary-600 flex items-center justify-center font-black text-lg">
+                      {student.name.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-black dark:text-white text-sm">{student.name}</p>
+                      <p className="text-xs font-bold text-slate-400">{student.phone}</p>
+                    </div>
+                  </div>
+                  <div className="text-left">
+                    <span className={`px-4 py-1.5 rounded-full text-[10px] font-black ${type === 'expiry' ? 'bg-amber-500/10 text-amber-600' : 'bg-rose-500/10 text-rose-600'}`}>
+                      {type === 'expiry' ? 'تنتهي قريباً' : 'منتهي'}
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-20">
+                <p className="text-slate-400 font-bold">لا يوجد طلاب في هذه القائمة حالياً</p>
+              </div>
+            )}
+          </div>
+        </motion.div>
+      </div>
+    )}
+  </AnimatePresence>
+);
+
 const DashboardCard = ({ title, value, icon, color, footerText, trend, subtitle }: any) => (
   <motion.div 
     initial={{ opacity: 0, y: 20 }}
@@ -24,9 +97,7 @@ const DashboardCard = ({ title, value, icon, color, footerText, trend, subtitle 
     whileHover={{ y: -8, transition: { duration: 0.2 } }}
     className="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group"
   >
-    {/* خلفية جمالية خفيفة */}
     <div className={`absolute -right-4 -top-4 w-24 h-24 bg-${color}-500/5 rounded-full blur-2xl group-hover:bg-${color}-500/10 transition-colors`} />
-    
     <div className="flex justify-between items-start relative z-10">
       <div className={`p-4 rounded-2xl bg-${color}-500/10 text-${color}-600 dark:text-${color}-400 shadow-inner`}>
         {icon}
@@ -38,13 +109,10 @@ const DashboardCard = ({ title, value, icon, color, footerText, trend, subtitle 
         </div>
       )}
     </div>
-
     <div className="mt-6 relative z-10">
       <p className="text-slate-500 dark:text-slate-400 font-bold text-xs uppercase tracking-widest mb-1">{title}</p>
       <div className="flex items-baseline gap-2">
-        <h3 className="text-3xl font-black dark:text-white tracking-tight">
-          {value ?? 0}
-        </h3>
+        <h3 className="text-3xl font-black dark:text-white tracking-tight">{value ?? 0}</h3>
         {subtitle && <span className="text-xs font-bold text-slate-400">{subtitle}</span>}
       </div>
       {footerText && (
@@ -57,9 +125,16 @@ const DashboardCard = ({ title, value, icon, color, footerText, trend, subtitle 
   </motion.div>
 );
 
+// --- المكون الرئيسي ---
+
 export default function Dashboard() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  
+  // States للـ Modals
+  const [isExpiryModalOpen, setIsExpiryModalOpen] = useState(false);
+  const [isExpiredModalOpen, setIsExpiredModalOpen] = useState(false);
+  const [filteredStudents, setFilteredStudents] = useState<{ expiry: any[], expired: any[] }>({ expiry: [], expired: [] });
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -67,6 +142,26 @@ export default function Dashboard() {
         const res = await api.get('/dashboard');
         if (res.data.success) {
           setStats(res.data.stats);
+          
+          // جلب بيانات الطلاب للتصفية في الـ Modals
+          const studentsRes = await api.get('/students?limit=1000'); // جلب الكل للتصفية المحلية
+          if (studentsRes.data.success) {
+            const allStudents = studentsRes.data.data;
+            const now = new Date();
+            const threeDaysFromNow = new Date();
+            threeDaysFromNow.setDate(now.getDate() + 3);
+
+            const expiry = allStudents.filter((s: any) => {
+              const activeSub = s.subscriptions.find((sub: any) => sub.status === "ACTIVE");
+              if (!activeSub) return false;
+              const endDate = new Date(activeSub.endDate);
+              return endDate > now && endDate <= threeDaysFromNow;
+            });
+
+            const expired = allStudents.filter((s: any) => s.computedStatus === "EXPIRED");
+
+            setFilteredStudents({ expiry, expired });
+          }
         }
       } catch (err) {
         console.error("Dashboard Error:", err);
@@ -79,11 +174,8 @@ export default function Dashboard() {
 
   if (loading) return (
     <div className="h-[80vh] flex flex-col items-center justify-center gap-4">
-        <div className="relative">
-            <Zap className="text-primary-600 animate-bounce" size={48} />
-            <div className="absolute inset-0 blur-xl bg-primary-500/20 animate-pulse rounded-full" />
-        </div>
-        <p className="font-black text-slate-400 text-sm animate-pulse">جاري تحضير البيانات الأسطورية...</p>
+      <Zap className="text-primary-600 animate-bounce" size={48} />
+      <p className="font-black text-slate-400 text-sm animate-pulse">جاري تحضير البيانات...</p>
     </div>
   );
 
@@ -92,117 +184,75 @@ export default function Dashboard() {
   return (
     <div className="space-y-8 pb-10 px-2 md:px-0">
       
-      {/* قسم الترحيب العلوي */}
+      {/* Modals */}
+      <StudentsModal 
+        isOpen={isExpiryModalOpen} 
+        onClose={() => setIsExpiryModalOpen(false)} 
+        title="طلاب تنتهي اشتراكاتهم خلال 72 ساعة"
+        students={filteredStudents.expiry}
+        type="expiry"
+      />
+      <StudentsModal 
+        isOpen={isExpiredModalOpen} 
+        onClose={() => setIsExpiredModalOpen(false)} 
+        title="طلاب انتهت اشتراكاتهم تماماً"
+        students={filteredStudents.expired}
+        type="expired"
+      />
+
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-            <h1 className="text-3xl font-black dark:text-white tracking-tight">لوحة التحكم</h1>
-            <p className="text-slate-500 font-bold text-sm">أهلاً بك، إليك ملخص أداء السنتر اليوم.</p>
+          <h1 className="text-3xl font-black dark:text-white tracking-tight">لوحة التحكم</h1>
+          <p className="text-slate-500 font-bold text-sm">أهلاً بك، إليك ملخص أداء السنتر اليوم.</p>
         </div>
         <div className="flex items-center gap-2 bg-white dark:bg-slate-900 p-2 rounded-2xl border border-slate-200 dark:border-slate-800">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-            <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-tighter">النظام يعمل بكفاءة</span>
+          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+          <span className="text-[10px] font-black text-slate-500 dark:text-slate-400">النظام يعمل بكفاءة</span>
         </div>
       </div>
 
-      {/* 1. قسم الإحصائيات السريعة */}
+      {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <DashboardCard 
-          title="إجمالي الطلاب" 
-          value={students?.total} 
-          icon={<Users size={24} />} 
-          color="blue"
-          footerText={`${students?.active ?? 0} طالب لديهم اشتراكات فعالة`}
-        />
-        
-        <DashboardCard 
-          title="إيرادات الشهر" 
-          value={revenue?.thisMonth?.toLocaleString()} 
-          subtitle="ج.م"
-          icon={<CreditCard size={24} />} 
-          color="emerald"
-          trend={revenue?.trend}
-          footerText={`الفرق: ${revenue?.difference > 0 ? '+' : ''}${revenue?.difference} ج.م`}
-        />
-
-        <DashboardCard 
-          title="رصيد الرسائل" 
-          value={sms?.messages} 
-          subtitle="رسالة"
-          icon={<MessageSquare size={24} />} 
-          color="amber"
-          footerText={`القيمة المالية: ${sms?.balanceInMoney} ج.م`}
-        />
-
-        <DashboardCard 
-          title="المحتوى الدراسي" 
-          value={content?.subjects} 
-          subtitle="مادة"
-          icon={<BookOpen size={24} />} 
-          color="purple"
-          footerText={`${content?.groups ?? 0} مجموعة مسجلة بالمركز`}
-        />
+        <DashboardCard title="إجمالي الطلاب" value={students?.total} icon={<Users size={24} />} color="blue" footerText={`${students?.active ?? 0} طالب نشط`} />
+        <DashboardCard title="إيرادات الشهر" value={revenue?.thisMonth?.toLocaleString()} subtitle="ج.م" icon={<CreditCard size={24} />} color="emerald" trend={revenue?.trend} footerText={`الفرق: ${revenue?.difference} ج.م`} />
+        <DashboardCard title="رصيد الرسائل" value={sms?.messages} subtitle="رسالة" icon={<MessageSquare size={24} />} color="amber" footerText={`القيمة: ${sms?.balanceInMoney} ج.م`} />
+        <DashboardCard title="المحتوى الدراسي" value={content?.subjects} subtitle="مادة" icon={<BookOpen size={24} />} color="purple" footerText={`${content?.groups ?? 0} مجموعة`} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* 2. قسم سجل النشاط */}
+        {/* Recent Activity */}
         <div className="lg:col-span-2">
           <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm h-full">
             <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/20">
               <h3 className="text-xl font-black dark:text-white flex items-center gap-3">
                 <ArrowRightLeft className="text-primary-600" size={24} />
-                آخر العمليات والأنشطة
+                آخر العمليات
               </h3>
             </div>
             <div className="p-8 space-y-6">
-              <AnimatePresence>
-                {recentActivity && recentActivity.length > 0 ? (
-                    recentActivity.map((log: any, idx: number) => (
-                    <motion.div 
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.05 }}
-                        key={idx} 
-                        className="flex items-start gap-4 p-4 rounded-3xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-100 dark:hover:border-slate-700"
-                    >
-                        <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center text-xs font-black text-primary-600 shrink-0">
-                        {idx + 1}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-1">
-                            <p className="text-sm font-bold dark:text-white truncate">
-                            <span className="text-primary-600 bg-primary-50 dark:bg-primary-500/10 px-2 py-0.5 rounded-lg ml-2">{log.user}</span> 
-                            {log.action}
-                            </p>
-                            <span className="text-[10px] font-black text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md w-fit shrink-0">
-                            {log.time}
-                            </span>
-                        </div>
-                        {log.target && (
-                            <p className="text-[11px] text-slate-500 mt-2 flex items-center gap-1 font-bold">
-                            <CheckCircle2 size={12} className="text-emerald-500" />
-                            {log.target}
-                            </p>
-                        )}
-                        </div>
-                    </motion.div>
-                    ))
-                ) : (
-                    <div className="text-center py-20">
-                        <div className="bg-slate-50 dark:bg-slate-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Clock className="text-slate-300" size={32} />
-                        </div>
-                        <p className="text-slate-400 font-bold">لا توجد سجلات حتى اللحظة</p>
+              {recentActivity?.map((log: any, idx: number) => (
+                <div key={idx} className="flex items-start gap-4 p-4 rounded-3xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border border-transparent">
+                  <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs font-black text-primary-600">{idx + 1}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col md:flex-row md:justify-between gap-1">
+                      <p className="text-sm font-bold dark:text-white truncate">
+                        <span className="text-primary-600 ml-2">{log.user}</span> 
+                        {log.action}
+                      </p>
+                      <span className="text-[10px] font-black text-slate-400">{log.time}</span>
                     </div>
-                )}
-              </AnimatePresence>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* 3. قسم التنبيهات الجانبية */}
+        {/* Side Alerts */}
         <div className="space-y-6">
-          {/* كارت التنبيه العاجل (Near Expiry) */}
+          {/* Near Expiry Card */}
           <motion.div 
             whileHover={{ scale: 1.02 }}
             className="bg-rose-600 dark:bg-rose-600/20 p-8 rounded-[3.5rem] border border-rose-500/20 shadow-2xl shadow-rose-500/20 relative overflow-hidden group"
@@ -215,31 +265,40 @@ export default function Dashboard() {
                 <Zap size={20} fill="currentColor" />
                 <span className="font-black text-xs uppercase tracking-widest">تنبيه انتهاء الاشتراك</span>
               </div>
-              <h4 className="text-white font-black text-2xl mb-1 leading-tight">
-                {students?.nearExpiry ?? 0} طالب
-              </h4>
+              <h4 className="text-white font-black text-2xl mb-1">{students?.nearExpiry ?? 0} طالب</h4>
               <p className="text-rose-100/70 text-xs font-bold mb-8 italic">تنتهي اشتراكاتهم خلال الـ 72 ساعة القادمة</p>
               
-              <button className="w-full py-4 bg-white dark:bg-rose-600 text-rose-600 dark:text-white rounded-[2rem] font-black text-xs shadow-xl hover:shadow-white/10 transition-all active:scale-95 flex items-center justify-center gap-2">
+              <button 
+                onClick={() => setIsExpiryModalOpen(true)}
+                className="w-full py-4 bg-white dark:bg-rose-600 text-rose-600 dark:text-white rounded-[2rem] font-black text-xs shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2"
+              >
                 عرض القائمة كاملة
                 <ArrowRightLeft size={14} className="rotate-180" />
               </button>
             </div>
           </motion.div>
 
-          {/* إحصائيات إضافية */}
-          <div className="bg-white dark:bg-slate-900 p-8 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-sm transition-all hover:shadow-md">
+          {/* Expired Stats */}
+          <div className="bg-white dark:bg-slate-900 p-8 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-sm">
             <h4 className="font-black dark:text-white mb-6 flex items-center gap-3 text-sm">
               <div className="w-2 h-6 bg-primary-500 rounded-full" />
               إحصائيات إضافية
             </h4>
             <div className="space-y-4">
-               <div className="flex justify-between items-center p-5 rounded-[2rem] bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50">
+               <div className="flex justify-between items-center p-5 rounded-[2rem] bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 group">
                   <div className="flex flex-col">
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">اشتراكات</span>
                     <span className="text-xs font-bold text-slate-600 dark:text-slate-300">منتهية تماماً</span>
                   </div>
-                  <span className="text-2xl font-black text-rose-500">{students?.expired ?? 0}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl font-black text-rose-500">{students?.expired ?? 0}</span>
+                    <button 
+                      onClick={() => setIsExpiredModalOpen(true)}
+                      className="p-2 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:text-primary-600 transition-colors"
+                    >
+                      <ArrowRightLeft size={14} className="rotate-180" />
+                    </button>
+                  </div>
                </div>
                
                <div className="flex justify-between items-center p-5 rounded-[2rem] bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50">
