@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, Trash2, X, BookOpen, Layers, 
   DollarSign, Clock, Check, Loader2, 
-  Edit3, ChevronRight, Hash, Info
+  Edit3, ChevronRight, Hash, Info, AlertCircle
 } from 'lucide-react';
 import api from '../../api/axios';
 
@@ -31,8 +31,8 @@ const STAGES = {
 
 const SUB_TYPES = {
   MONTHLY: 'اشتراك شهري',
-  HALF_MONTH: 'نصف شهر',
-  COURSE: 'كورس كامل'
+  COURSE: 'كورس كامل',
+  HALF_MONTH: 'نصف شهر'
 } as const;
 
 // --- Subject Modal Component ---
@@ -43,15 +43,20 @@ const SubjectModal = ({ isOpen, onClose, onSubmit, initialData }: any) => {
   useEffect(() => {
     if (isOpen) {
       if (initialData) {
-        setSubjects([{
-          id: initialData.id,
-          name: initialData.name,
-          prices: initialData.prices.map((p: any) => ({
+        // فلترة: لا تظهر "نصف الشهر" عند التعديل لأنه يُحسب تلقائياً
+        const filteredPrices = initialData.prices
+          .filter((p: any) => p.subscriptionType !== 'HALF_MONTH')
+          .map((p: any) => ({
             stage: p.stage,
             subscriptionType: p.subscriptionType,
             price: p.price,
             durationInMonths: p.durationInMonths || 1
-          }))
+          }));
+
+        setSubjects([{
+          id: initialData.id,
+          name: initialData.name,
+          prices: filteredPrices
         }]);
       } else {
         setSubjects([{ name: '', prices: [{ stage: 'HIGH', subscriptionType: 'MONTHLY', price: '', durationInMonths: 1 }] }]);
@@ -108,6 +113,7 @@ const SubjectModal = ({ isOpen, onClose, onSubmit, initialData }: any) => {
         }))
       }));
 
+      // إرسال البيانات (في التعديل نرسل الكائن الأول فقط حسب هيكلة الـ API عندك)
       const payload = initialData 
         ? { 
             name: cleanedSubjects[0].name,
@@ -138,13 +144,21 @@ const SubjectModal = ({ isOpen, onClose, onSubmit, initialData }: any) => {
             </div>
             <div>
               <h3 className="text-xl font-black dark:text-white">{initialData ? 'تحديث مادة' : 'إضافة مواد جديدة'}</h3>
-              <p className="text-xs text-slate-500 font-bold">إدارة وتسعير المناهج</p>
+              <p className="text-xs text-slate-500 font-bold">إدارة تفاصيل المنهج والتسعير</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-rose-500/10 text-slate-400 hover:text-rose-500 rounded-lg transition-all"><X size={24} /></button>
         </div>
 
         <form onSubmit={handleFinalSubmit} className="p-6 space-y-6 overflow-y-auto custom-scrollbar flex-1">
+          {/* تنبيه ذكي داخل المودال */}
+          <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-2xl">
+            <Info className="text-amber-600 mt-1" size={18} />
+            <p className="text-xs text-amber-800 dark:text-amber-400 font-bold leading-relaxed">
+              عند إدخال سعر "الاشتراك الشهري"، سيقوم النظام تلقائياً بإنشاء خيار "نصف شهر" بنصف القيمة. لا حاجة لإضافته يدوياً.
+            </p>
+          </div>
+
           {subjects.map((sub, sIndex) => (
             <div key={sIndex} className="p-6 rounded-2xl border dark:border-slate-800 bg-white dark:bg-slate-900 relative">
               {!initialData && subjects.length > 1 && (
@@ -164,7 +178,7 @@ const SubjectModal = ({ isOpen, onClose, onSubmit, initialData }: any) => {
                     />
                   </div>
                   {!initialData && (
-                    <button type="button" onClick={addSubject} className="p-3 bg-indigo-50 text-indigo-600 rounded-xl font-black hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-2 text-sm">
+                    <button type="button" onClick={addSubject} className="p-3 bg-indigo-50 text-indigo-600 rounded-xl font-black hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-2 text-sm h-[52px]">
                       <Plus size={18} /> مادة أخرى
                     </button>
                   )}
@@ -182,26 +196,27 @@ const SubjectModal = ({ isOpen, onClose, onSubmit, initialData }: any) => {
 
                   <div className="grid grid-cols-1 gap-3">
                     {sub.prices.map((price, pIndex) => (
-                      <div key={pIndex} className="flex flex-wrap md:flex-nowrap items-center gap-3 bg-slate-50/50 dark:bg-slate-800/40 p-3 rounded-xl border dark:border-slate-800">
+                      <div key={pIndex} className="flex flex-wrap md:flex-nowrap items-center gap-3 bg-slate-50/50 dark:bg-slate-800/40 p-3 rounded-xl border dark:border-slate-800 animate-in fade-in zoom-in duration-300">
                         <select 
                           value={price.stage} onChange={e => updateVal(sIndex, pIndex, 'stage', e.target.value)}
-                          className="flex-1 min-w-[120px] bg-white dark:bg-slate-800 p-2.5 rounded-lg border-none font-bold text-xs dark:text-white"
+                          className="flex-1 min-w-[120px] bg-white dark:bg-slate-800 p-2.5 rounded-lg border-none font-bold text-xs dark:text-white outline-none ring-1 ring-slate-200 dark:ring-slate-700"
                         >
                           {Object.entries(STAGES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                         </select>
 
                         <select 
                           value={price.subscriptionType} onChange={e => updateVal(sIndex, pIndex, 'subscriptionType', e.target.value)}
-                          className="flex-1 min-w-[130px] bg-white dark:bg-slate-800 p-2.5 rounded-lg border-none font-bold text-xs dark:text-white"
+                          className="flex-1 min-w-[130px] bg-white dark:bg-slate-800 p-2.5 rounded-lg border-none font-bold text-xs dark:text-white outline-none ring-1 ring-slate-200 dark:ring-slate-700"
                         >
-                          {Object.entries(SUB_TYPES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                          <option value="MONTHLY">اشتراك شهري</option>
+                          <option value="COURSE">كورس كامل</option>
                         </select>
 
                         <div className="relative flex-1 min-w-[100px]">
                           <input 
                             type="number" required placeholder="السعر" value={price.price}
                             onChange={e => updateVal(sIndex, pIndex, 'price', e.target.value)}
-                            className="w-full bg-white dark:bg-slate-800 p-2.5 pr-8 rounded-lg border-none font-bold text-xs dark:text-white"
+                            className="w-full bg-white dark:bg-slate-800 p-2.5 pr-8 rounded-lg border-none font-bold text-xs dark:text-white outline-none ring-1 ring-slate-200 dark:ring-slate-700"
                           />
                           <DollarSign className="absolute right-2 top-2.5 text-slate-400" size={14} />
                         </div>
@@ -211,14 +226,14 @@ const SubjectModal = ({ isOpen, onClose, onSubmit, initialData }: any) => {
                             <input 
                               type="number" required placeholder="شهور" value={price.durationInMonths || ''}
                               onChange={e => updateVal(sIndex, pIndex, 'durationInMonths', e.target.value)}
-                              className="w-full bg-indigo-50/50 dark:bg-indigo-900/20 p-2.5 pr-8 rounded-lg border-none font-bold text-xs dark:text-indigo-600"
+                              className="w-full bg-indigo-50/50 dark:bg-indigo-900/20 p-2.5 pr-8 rounded-lg border-none font-bold text-xs dark:text-indigo-600 outline-none"
                             />
                             <Clock className="absolute right-2 top-2.5 text-indigo-400" size={14} />
                           </div>
                         )}
 
                         {sub.prices.length > 1 && (
-                          <button type="button" onClick={() => removePrice(sIndex, pIndex)} className="p-2 text-rose-500 hover:bg-rose-100 rounded-lg">
+                          <button type="button" onClick={() => removePrice(sIndex, pIndex)} className="p-2 text-rose-500 hover:bg-rose-100 rounded-lg transition-colors">
                             <Trash2 size={18} />
                           </button>
                         )}
@@ -236,7 +251,7 @@ const SubjectModal = ({ isOpen, onClose, onSubmit, initialData }: any) => {
             disabled={loading || !isFormValid} 
             onClick={handleFinalSubmit}
             className={`flex-[2] py-3.5 rounded-xl font-black text-base shadow-lg transition-all flex justify-center items-center gap-2 ${
-              isFormValid ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-600/20' : 'bg-slate-200 text-slate-400'
+              isFormValid ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-600/20' : 'bg-slate-200 text-slate-400 cursor-not-allowed'
             }`}
           >
             {loading ? <Loader2 className="animate-spin" size={20} /> : <Check size={20} />}
@@ -280,7 +295,7 @@ export default function SubjectsPage() {
   };
 
   const deleteSubject = async (id: number) => {
-    if (!window.confirm("حذف المادة بشكل نهائي؟")) return;
+    if (!window.confirm("حذف المادة بشكل نهائي؟ سيتم حذف جميع الأسعار المرتبطة بها.")) return;
     try {
       await api.delete(`/subjects/${id}`);
       fetchSubjects();
@@ -290,22 +305,20 @@ export default function SubjectsPage() {
   return (
     <div className="p-6 md:p-10 max-w-[1440px] mx-auto space-y-8" dir="rtl">
       
-      {/* --- INFO BOX --- */}
+      {/* ⚠️ الذكاء الاصطناعي في التنبيه العلوي الجديد */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/20 dark:to-blue-950/20 border border-indigo-100 dark:border-indigo-900/50 p-6 rounded-3xl"
+        className="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/20 dark:to-blue-950/20 border border-indigo-100 dark:border-indigo-900/50 p-6 rounded-3xl shadow-sm"
       >
-        <div className="flex gap-4">
-          <div className="p-3 bg-indigo-600 rounded-2xl text-white h-fit shadow-lg shadow-indigo-600/20">
-            <Info size={24} />
+        <div className="flex flex-col md:flex-row items-center gap-6">
+          <div className="w-16 h-16 bg-white dark:bg-slate-900 rounded-2xl flex items-center justify-center text-indigo-600 shadow-sm border dark:border-slate-800 shrink-0">
+            <AlertCircle size={32} />
           </div>
-          <div className="space-y-2">
-            <h4 className="text-lg font-black text-indigo-900 dark:text-indigo-300">نظام التسعير الذكي</h4>
-            <p className="text-sm text-indigo-800/80 dark:text-indigo-400/80 font-bold leading-relaxed">
-              عند إضافة أو تعديل مادة باشتراك <span className="text-indigo-600 dark:text-indigo-400">"شهري"</span>، يقوم النظام تلقائياً بإنشاء نسخة 
-              <span className="text-indigo-600 dark:text-indigo-400"> "نصف شهر" </span> 
-              بقيمته مقسومة على 2. يمكنك دائماً تعديل سعر "نصف الشهر" يدوياً أو حذفه دون التأثير على السعر الأساسي.
+          <div className="space-y-1 text-center md:text-right">
+            <h2 className="text-lg font-black text-slate-900 dark:text-white">نظام التسعير التلقائي ذكي!</h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400 font-bold leading-relaxed">
+              عند إضافة "اشتراك شهري"، يتم تلقائياً إنشاء نسخة "نصف شهر" مقسومة على 2. يمكنك تعديل السعر الأساسي فقط، وسيتم تحديث النصف شهر تلقائياً لضمان دقة الحسابات.
             </p>
           </div>
         </div>
@@ -355,9 +368,11 @@ export default function SubjectsPage() {
                   <h3 className="text-xl font-black dark:text-white leading-tight">{sub.name}</h3>
                   <div className="space-y-2">
                     {sub.prices.map((p: any) => (
-                      <div key={p.id} className={`flex justify-between items-center p-3 rounded-xl border ${p.subscriptionType === 'HALF_MONTH' ? 'bg-amber-50/30 border-amber-100 dark:bg-amber-900/10 dark:border-amber-900/30' : 'bg-slate-50/50 border-slate-100 dark:bg-slate-800/50 dark:border-slate-700/30'}`}>
+                      <div key={p.id} className={`flex justify-between items-center p-3 rounded-xl border ${p.subscriptionType === 'HALF_MONTH' ? 'bg-amber-50/30 border-amber-100 dark:bg-amber-900/10 dark:border-amber-900/30' : 'bg-slate-50/50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-700/30'}`}>
                         <div className="flex flex-col">
-                          <span className={`text-[10px] font-black ${p.subscriptionType === 'HALF_MONTH' ? 'text-amber-600' : 'text-indigo-500'}`}>{(STAGES as any)[p.stage]}</span>
+                          <span className={`text-[10px] font-black ${p.subscriptionType === 'HALF_MONTH' ? 'text-amber-600' : 'text-indigo-500'}`}>
+                            {(STAGES as any)[p.stage]}
+                          </span>
                           <span className="text-[9px] font-bold text-slate-400">{(SUB_TYPES as any)[p.subscriptionType]}</span>
                         </div>
                         <span className="font-black text-lg text-slate-900 dark:text-white">{p.price} <small className="text-[10px]">ج.م</small></span>
@@ -367,13 +382,25 @@ export default function SubjectsPage() {
                 </div>
               </div>
               <div className="px-6 py-3 bg-slate-50/30 dark:bg-slate-800/20 border-t dark:border-slate-800 flex justify-between items-center text-[10px] text-slate-400 font-bold">
-                  <span className="flex items-center gap-1"><Hash size={10} /> {sub.id}</span>
+                  <span className="flex items-center gap-1"><Hash size={10} /> كود: {sub.id}</span>
                   <ChevronRight size={14} className="group-hover:translate-x-[-4px] transition-transform" />
               </div>
             </motion.div>
           ))}
         </div>
       )}
+
+      {/* SMS Info Box */}
+      <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 p-6 rounded-3xl text-sm text-blue-900 dark:text-blue-300 font-bold leading-relaxed shadow-sm">
+        <div className="flex items-center gap-2 mb-4 text-blue-700 dark:text-blue-400">
+          <Info size={20} />
+          <span className="text-lg font-black">معلومات هامة عن نظام الرسائل</span>
+        </div>
+        يتم إرسال رسائل <span className="font-black">SMS</span> تلقائيًا إلى رقم ولي أمر الطالب في حالات: 
+        إضافة الطالب لأول مرة، تجديد الاشتراك، قرب الانتهاء (3 أيام)، وعند الانتهاء.
+        <br /><br />
+        تحتوي الرسالة دائماً على: اسم الطالب، المواد، تاريخ الانتهاء، والسعر الإجمالي. يتم احتساب الرسالة بناءً على الطول (60 حرفاً = رسالة واحدة).
+      </div>
 
       <AnimatePresence>
         {modal.open && (
