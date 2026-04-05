@@ -390,17 +390,6 @@ export default function SubjectsPage() {
         </div>
       )}
 
-      {/* SMS Info Box */}
-      <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 p-6 rounded-3xl text-sm text-blue-900 dark:text-blue-300 font-bold leading-relaxed shadow-sm">
-        <div className="flex items-center gap-2 mb-4 text-blue-700 dark:text-blue-400">
-          <Info size={20} />
-          <span className="text-lg font-black">معلومات هامة عن نظام الرسائل</span>
-        </div>
-        يتم إرسال رسائل <span className="font-black">SMS</span> تلقائيًا إلى رقم ولي أمر الطالب في حالات: 
-        إضافة الطالب لأول مرة، تجديد الاشتراك، قرب الانتهاء (3 أيام)، وعند الانتهاء.
-        <br /><br />
-        تحتوي الرسالة دائماً على: اسم الطالب، المواد، تاريخ الانتهاء، والسعر الإجمالي. يتم احتساب الرسالة بناءً على الطول (60 حرفاً = رسالة واحدة).
-      </div>
 
       <AnimatePresence>
         {modal.open && (
