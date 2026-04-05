@@ -16,7 +16,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore'; 
 import { useThemeStore } from '../../store/useThemeStore';
-import api from "../../api/axios"; // استيراد الأكسيوس الذي يحتوي على الرابط الأساسي
+import api from "../../api/axios"; 
 
 export default function Login() {
   const { darkMode, toggleTheme } = useThemeStore();
@@ -33,24 +33,28 @@ export default function Login() {
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
+    // منع الريلود تماماً
     e.preventDefault();
+    e.stopPropagation(); 
+    
     setLoading(true);
     setError('');
 
     try {
-      // استخدام api.post مباشرة لجلب الرابط من إعدادات الأكسيوس
       const response = await api.post('/auth/login', formData);
       const data = response.data;
 
-      // تحديث الستور ببيانات المستخدم والتوكن والمركز
+      // تحديث الستور ببيانات المستخدم
       setAuth(data.user, data.token, data.center);
       
-      // التوجه لصفحة الخطط
+      // التوجه لصفحة الخطط عند النجاح
       navigate('/plans'); 
       
     } catch (err: any) {
-      // التعامل مع الخطأ القادم من أكسيوس
-      setError(err.response?.data?.error || 'بيانات الدخول غير صحيحة أو حدث خطأ في السيرفر');
+      // استخراج رسالة الخطأ بدقة من رد السيرفر
+      const errorMessage = err.response?.data?.message || err.response?.data?.error || 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+      setError(errorMessage);
+      console.error("Login Error:", err);
     } finally {
       setLoading(false);
     }
@@ -68,6 +72,7 @@ export default function Login() {
 
         {/* زر تبديل الثيم */}
         <button 
+          type="button"
           onClick={toggleTheme}
           className="fixed top-8 left-8 z-50 p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl hover:scale-110 transition-all group"
         >
@@ -136,25 +141,32 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Error Message */}
-            <AnimatePresence>
+            {/* Error Message Section */}
+            <AnimatePresence mode="wait">
               {error && (
                 <motion.div 
-                  initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                  className="flex items-center gap-3 p-5 bg-red-500/10 border border-red-500/20 text-red-600 rounded-[1.5rem] text-sm font-black"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
                 >
-                  <AlertCircle size={20} />
-                  <span>{error}</span>
+                  <div className="flex items-center gap-3 p-5 bg-red-500/10 border border-red-500/20 text-red-600 rounded-[1.5rem] text-sm font-black">
+                    <AlertCircle size={20} />
+                    <span>{error}</span>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
             {/* Submit Button */}
             <button 
+              type="submit"
               disabled={loading}
               className="w-full py-5 bg-primary-600 text-white rounded-[1.5rem] font-black text-xl shadow-2xl shadow-primary-600/30 hover:bg-primary-700 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 transition-all flex items-center justify-center gap-4 group"
             >
-              {loading ? <Loader2 className="animate-spin" /> : (
+              {loading ? (
+                <Loader2 className="animate-spin" size={24} />
+              ) : (
                 <>
                   <span>تسجيل الدخول</span>
                   <LogIn size={22} className="group-hover:-translate-x-1 transition-transform" />
