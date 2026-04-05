@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, Trash2, X, BookOpen, Layers, 
   DollarSign, Clock, Check, Loader2, 
-  Edit3, ChevronRight, Hash
+  Edit3, ChevronRight, Hash, Info
 } from 'lucide-react';
 import api from '../../api/axios';
 
@@ -11,7 +11,7 @@ import api from '../../api/axios';
 interface IPrice {
   id?: number;
   stage: 'PRIMARY' | 'MIDDLE' | 'HIGH';
-  subscriptionType: 'MONTHLY' | 'COURSE';
+  subscriptionType: 'MONTHLY' | 'COURSE' | 'HALF_MONTH';
   price: number | string;
   durationInMonths?: number | null;
 }
@@ -31,6 +31,7 @@ const STAGES = {
 
 const SUB_TYPES = {
   MONTHLY: 'اشتراك شهري',
+  HALF_MONTH: 'نصف شهر',
   COURSE: 'كورس كامل'
 } as const;
 
@@ -109,7 +110,6 @@ const SubjectModal = ({ isOpen, onClose, onSubmit, initialData }: any) => {
 
       const payload = initialData 
         ? { 
-            subjects: cleanedSubjects,
             name: cleanedSubjects[0].name,
             prices: cleanedSubjects[0].prices
           }
@@ -138,7 +138,7 @@ const SubjectModal = ({ isOpen, onClose, onSubmit, initialData }: any) => {
             </div>
             <div>
               <h3 className="text-xl font-black dark:text-white">{initialData ? 'تحديث مادة' : 'إضافة مواد جديدة'}</h3>
-              <p className="text-xs text-slate-500 font-bold">إدارة تفاصيل المنهج</p>
+              <p className="text-xs text-slate-500 font-bold">إدارة وتسعير المناهج</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-rose-500/10 text-slate-400 hover:text-rose-500 rounded-lg transition-all"><X size={24} /></button>
@@ -288,9 +288,30 @@ export default function SubjectsPage() {
   };
 
   return (
-    <div className="p-6 md:p-10 max-w-[1440px] mx-auto space-y-10" dir="rtl">
+    <div className="p-6 md:p-10 max-w-[1440px] mx-auto space-y-8" dir="rtl">
       
-      {/* Header - المصغر والأنيق */}
+      {/* --- INFO BOX --- */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/20 dark:to-blue-950/20 border border-indigo-100 dark:border-indigo-900/50 p-6 rounded-3xl"
+      >
+        <div className="flex gap-4">
+          <div className="p-3 bg-indigo-600 rounded-2xl text-white h-fit shadow-lg shadow-indigo-600/20">
+            <Info size={24} />
+          </div>
+          <div className="space-y-2">
+            <h4 className="text-lg font-black text-indigo-900 dark:text-indigo-300">نظام التسعير الذكي</h4>
+            <p className="text-sm text-indigo-800/80 dark:text-indigo-400/80 font-bold leading-relaxed">
+              عند إضافة أو تعديل مادة باشتراك <span className="text-indigo-600 dark:text-indigo-400">"شهري"</span>، يقوم النظام تلقائياً بإنشاء نسخة 
+              <span className="text-indigo-600 dark:text-indigo-400"> "نصف شهر" </span> 
+              بقيمته مقسومة على 2. يمكنك دائماً تعديل سعر "نصف الشهر" يدوياً أو حذفه دون التأثير على السعر الأساسي.
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border dark:border-slate-800">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
@@ -334,9 +355,9 @@ export default function SubjectsPage() {
                   <h3 className="text-xl font-black dark:text-white leading-tight">{sub.name}</h3>
                   <div className="space-y-2">
                     {sub.prices.map((p: any) => (
-                      <div key={p.id} className="flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50 p-3 rounded-xl border dark:border-slate-700/30">
+                      <div key={p.id} className={`flex justify-between items-center p-3 rounded-xl border ${p.subscriptionType === 'HALF_MONTH' ? 'bg-amber-50/30 border-amber-100 dark:bg-amber-900/10 dark:border-amber-900/30' : 'bg-slate-50/50 border-slate-100 dark:bg-slate-800/50 dark:border-slate-700/30'}`}>
                         <div className="flex flex-col">
-                          <span className="text-[10px] font-black text-indigo-500">{(STAGES as any)[p.stage]}</span>
+                          <span className={`text-[10px] font-black ${p.subscriptionType === 'HALF_MONTH' ? 'text-amber-600' : 'text-indigo-500'}`}>{(STAGES as any)[p.stage]}</span>
                           <span className="text-[9px] font-bold text-slate-400">{(SUB_TYPES as any)[p.subscriptionType]}</span>
                         </div>
                         <span className="font-black text-lg text-slate-900 dark:text-white">{p.price} <small className="text-[10px]">ج.م</small></span>
