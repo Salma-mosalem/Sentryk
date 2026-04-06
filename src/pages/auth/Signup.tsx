@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { useThemeStore } from '../../store/useThemeStore';
 import { Link, useNavigate } from 'react-router-dom';
-import api from "../../api/axios"; // استيراد الأكسيوس كما طلبت
+import api from "../../api/axios";
 
 export default function Signup() {
   const { darkMode, toggleTheme } = useThemeStore();
@@ -27,10 +27,17 @@ export default function Signup() {
     password: ''
   });
 
-  // دوال التحقق (Validation Logic)
-  const isPasswordStrong = (pass: string) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    return regex.test(pass);
+  // دوال التحقق المحدثة
+  const passwordCriteria = {
+    length: formData.password.length >= 8,
+    upper: /[A-Z]/.test(formData.password),
+    lower: /[a-z]/.test(formData.password),
+    number: /\d/.test(formData.password),
+    special: /[@$!%*?&]/.test(formData.password)
+  };
+
+  const isPasswordStrong = () => {
+    return Object.values(passwordCriteria).every(Boolean);
   };
 
   const isPhoneValid = (phone: string) => {
@@ -41,15 +48,13 @@ export default function Signup() {
     e.preventDefault();
     setError('');
 
-    // التحقق من رقم الهاتف
     if (!isPhoneValid(formData.phone)) {
       setError('يجب أن يتكون رقم الهاتف من 11 رقم فقط');
       return;
     }
 
-    // التحقق من قوة كلمة المرور
-    if (!isPasswordStrong(formData.password)) {
-      setError('كلمة المرور لا تستوفي الشروط الأمنية المطلوبة');
+    if (!isPasswordStrong()) {
+      setError('كلمة المرور لا تستوفي جميع الشروط الأمنية الموضحة بالأسفل');
       return;
     }
 
@@ -58,13 +63,8 @@ export default function Signup() {
     setLoading(true);
 
     try {
-      // استخدام api.post مباشرة (الرابط الأساسي معرف في axios.js)
       const response = await api.post('/auth/signup', formData);
-
-      // حفظ التوكن في LocalStorage
       localStorage.setItem('token', response.data.token);
-      
-      // التوجيه لصفحة الخطط
       navigate('/plans');
     } catch (err: any) {
       setError(err.response?.data?.error || 'حدث خطأ ما أثناء إنشاء الحساب');
@@ -205,25 +205,29 @@ export default function Signup() {
                   <input 
                     required
                     type={showPassword ? 'text' : 'password'} 
-                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl py-4 pr-12 pl-12 outline-none focus:border-primary-600 transition-all font-bold dark:text-white text-left shadow-sm"
+                    className={`w-full bg-white dark:bg-slate-900 border ${error.includes('كلمة المرور') ? 'border-red-500' : 'border-slate-200 dark:border-slate-800'} rounded-2xl py-4 pr-12 pl-12 outline-none focus:border-primary-600 transition-all font-bold dark:text-white text-left shadow-sm`}
                     placeholder="••••••••"
                     value={formData.password}
                     onChange={(e) => setFormData({...formData, password: e.target.value})}
                   />
                 </div>
+
                 {/* متطلبات كلمة المرور الموضحة بصرياً */}
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-3 px-2">
-                  <div className={`flex items-center gap-2 text-[10px] font-bold ${/[A-Z]/.test(formData.password) ? 'text-green-500' : 'text-slate-400'}`}>
-                    {/[A-Z]/.test(formData.password) ? <CheckCircle2 size={12}/> : <XCircle size={12}/>} حرف كبير
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2 mt-3 px-2">
+                  <div className={`flex items-center gap-2 text-[10px] font-bold transition-colors ${passwordCriteria.length ? 'text-green-500' : 'text-slate-400'}`}>
+                    {passwordCriteria.length ? <CheckCircle2 size={12}/> : <XCircle size={12}/>} 8 حروف على الأقل
                   </div>
-                  <div className={`flex items-center gap-2 text-[10px] font-bold ${/[a-z]/.test(formData.password) ? 'text-green-500' : 'text-slate-400'}`}>
-                    {/[a-z]/.test(formData.password) ? <CheckCircle2 size={12}/> : <XCircle size={12}/>} حرف صغير
+                  <div className={`flex items-center gap-2 text-[10px] font-bold transition-colors ${passwordCriteria.upper ? 'text-green-500' : 'text-slate-400'}`}>
+                    {passwordCriteria.upper ? <CheckCircle2 size={12}/> : <XCircle size={12}/>} حرف كبير
                   </div>
-                  <div className={`flex items-center gap-2 text-[10px] font-bold ${/\d/.test(formData.password) ? 'text-green-500' : 'text-slate-400'}`}>
-                    {/\d/.test(formData.password) ? <CheckCircle2 size={12}/> : <XCircle size={12}/>} أرقام
+                  <div className={`flex items-center gap-2 text-[10px] font-bold transition-colors ${passwordCriteria.lower ? 'text-green-500' : 'text-slate-400'}`}>
+                    {passwordCriteria.lower ? <CheckCircle2 size={12}/> : <XCircle size={12}/>} حرف صغير
                   </div>
-                  <div className={`flex items-center gap-2 text-[10px] font-bold ${/[@$!%*?&]/.test(formData.password) ? 'text-green-500' : 'text-slate-400'}`}>
-                    {/[@$!%*?&]/.test(formData.password) ? <CheckCircle2 size={12}/> : <XCircle size={12}/>} رمز خاص
+                  <div className={`flex items-center gap-2 text-[10px] font-bold transition-colors ${passwordCriteria.number ? 'text-green-500' : 'text-slate-400'}`}>
+                    {passwordCriteria.number ? <CheckCircle2 size={12}/> : <XCircle size={12}/>} أرقام
+                  </div>
+                  <div className={`flex items-center gap-2 text-[10px] font-bold transition-colors ${passwordCriteria.special ? 'text-green-500' : 'text-slate-400'}`}>
+                    {passwordCriteria.special ? <CheckCircle2 size={12}/> : <XCircle size={12}/>} رمز خاص (@#$!)
                   </div>
                 </div>
               </div>
