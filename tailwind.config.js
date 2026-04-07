@@ -25,7 +25,7 @@ export default {
         },
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+       sans: ["IBM Plex Sans Arabic", "sans-serif"],
       },
     },
   },
