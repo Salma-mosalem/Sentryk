@@ -1,6 +1,6 @@
 import { motion, type Variants } from 'framer-motion'; // أضفنا Variants هنا للدقة
 import { 
-  Zap, Heart, Users, GraduationCap, Sparkles, MousePointer2, ChevronLeft, Briefcase, Sun, Moon, ShieldCheck
+  Heart, Users, GraduationCap, Sparkles, MousePointer2, ChevronLeft, Briefcase, Sun, Moon, ShieldCheck
 } from 'lucide-react';
 import { useThemeStore } from '../../store/useThemeStore';
 import { Link } from 'react-router-dom';
@@ -37,10 +37,11 @@ export default function About() {
       <nav className="fixed top-0 w-full z-50 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 bg-white/40 dark:bg-[#030712]/40">
         <div className="max-w-7xl mx-auto px-8 h-20 flex justify-between items-center">
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center text-white shadow-2xl shadow-primary-500/40">
-              <Zap size={22} fill="currentColor" />
+            <div className="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center text-white shadow-2xl shadow-primary-500/40 overflow-hidden">
+              {/* استبدال أيقونة Zap باللوجو الخاص بك */}
+              <img src="/favicon.svg" alt="Sentryk Logo" className="w-[22px] h-[22px] object-contain" />
             </div>
-            <span className="text-2xl font-black tracking-tighter dark:text-white uppercase">SENTRYK</span>
+            <span className="text-2xl font-black tracking-tighter dark:text-white uppercase font-display">SENTRYK</span>
           </motion.div>
 
           <div className="flex items-center gap-6">
