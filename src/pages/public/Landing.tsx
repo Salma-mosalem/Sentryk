@@ -13,8 +13,7 @@ import {
   ShieldAlert,
   Sparkles,
   Sun,
-  Users,
-  Zap
+  Users
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useThemeStore } from '../../store/useThemeStore';
@@ -56,16 +55,20 @@ export default function Landing() {
   const { darkMode, toggleTheme } = useThemeStore();
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#030712] transition-colors duration-500 overflow-hidden text-right" dir="rtl">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#030712] transition-colors duration-500 overflow-hidden text-right font-sans" dir="rtl">
       
       {/* --- Navbar --- */}
       <nav className="fixed top-0 w-full z-50 backdrop-blur-md border-b border-slate-200/50 dark:border-slate-800/50 bg-white/70 dark:bg-[#030712]/70">
         <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <div className="w-11 h-11 bg-primary-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-primary-500/20">
-              <Zap size={26} fill="currentColor" />
+          <div className="flex items-center gap-3">
+            {/* تحسين شكل اللوجو الاحترافي */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-primary-500/20 blur-lg rounded-xl"></div>
+              <div className="relative w-11 h-11 bg-primary-600 rounded-xl flex items-center justify-center shadow-xl shadow-primary-600/30 overflow-hidden border border-white/10 transition-transform hover:scale-105">
+                <img src="/favicon.svg" alt="Sentryk Logo" className="w-7 h-7 object-contain" />
+              </div>
             </div>
-            <span className="text-2xl font-black tracking-tighter dark:text-white uppercase">SENTRYK</span>
+            <span className="text-2xl font-black tracking-tighter dark:text-white uppercase font-display">SENTRYK</span>
           </div>
 
           <div className="flex items-center gap-4">
@@ -86,7 +89,7 @@ export default function Landing() {
             <span>نظام الإدارة الأكثر تطوراً للمعلمين المحترفين في مصر</span>
           </motion.div>
 
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-5xl md:text-[5.5rem] font-black leading-[1.15] mb-8 dark:text-white tracking-tight">
+          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-5xl md:text-[5.5rem] font-black leading-[1.15] mb-8 dark:text-white tracking-tight font-display">
             حول مركزك التعليمي <br />
             إلى <span className="text-primary-600 italic">منظومة</span> ذكية
           </motion.h1>
@@ -116,7 +119,7 @@ export default function Landing() {
       <section className="py-24 px-6 bg-white/40 dark:bg-slate-900/20">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-6xl font-black mb-6 dark:text-white">لماذا يختار المحترفون "سنتريك"؟</h2>
+            <h2 className="text-4xl md:text-6xl font-black mb-6 dark:text-white font-display">لماذا يختار المحترفون "سنتريك"؟</h2>
             <p className="text-slate-500 dark:text-slate-400 font-bold italic text-xl max-w-3xl mx-auto">نحن لا نقدم مجرد مميزات تقنية، بل نقدم حلاً جذرياً لمشاكل الإدارة اليومية التي تواجه كل معلم ناجح.</p>
           </div>
 
@@ -142,10 +145,10 @@ export default function Landing() {
 
       {/* --- High Prestige Section --- */}
       <section className="py-24 px-6 relative">
-        <div className="max-w-5xl mx-auto bg-slate-900 dark:bg-primary-950 rounded-[4rem] p-12 md:p-20 text-center relative overflow-hidden shadow-2xl">
+        <div className="max-w-5xl mx-auto bg-slate-900 dark:bg-primary-950 rounded-[4rem] p-12 md:p-20 text-center relative overflow-hidden shadow-2xl border border-white/5">
             <div className="relative z-10">
                 <GraduationCap size={70} className="mx-auto mb-8 text-primary-500" />
-                <h2 className="text-4xl md:text-6xl font-black text-white mb-8">استعد وقتك المفقود.. <br/> وعزز قيمة عملك</h2>
+                <h2 className="text-4xl md:text-6xl font-black text-white mb-8 font-display">استعد وقتك المفقود.. <br/> وعزز قيمة عملك</h2>
                 <p className="text-xl md:text-2xl text-slate-300 font-medium mb-12 max-w-2xl mx-auto italic">"الإدارة الناجحة هي نصف نجاح المدرس. سنتريك يضمن لك منظومة تعمل بدقة الساعة السويسرية."</p>
                 <Link to="/signup" className="inline-flex items-center gap-3 px-12 py-5 bg-white text-slate-900 rounded-2xl font-black text-2xl hover:bg-primary-50 hover:scale-105 transition-all shadow-xl">
                     ابدأ تجربتك الآن
@@ -160,9 +163,11 @@ export default function Landing() {
       <footer className="py-20 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#030712]">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-12 text-right">
           <div className="md:col-span-1">
-            <div className="flex items-center gap-2 mb-6">
-              <Zap className="text-primary-600" />
-              <span className="text-2xl font-black dark:text-white tracking-tighter">SENTRYK</span>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-9 h-9 bg-primary-600 rounded-lg flex items-center justify-center">
+                <img src="/favicon.svg" alt="Sentryk Logo" className="w-5 h-5 invert brightness-0" />
+              </div>
+              <span className="text-2xl font-black dark:text-white tracking-tighter font-display">SENTRYK</span>
             </div>
             <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-bold">
               نظام سنتريك هو الشريك المثالي للمدرس الخصوصي الناجح. نخلصك من تعقيدات الورق والملفات لتركز على طلابك فقط.
@@ -174,7 +179,7 @@ export default function Landing() {
             <ul className="space-y-4 font-bold text-slate-500 dark:text-slate-400">
               <li><Link to="/about" className="hover:text-primary-600">عن سنتريك</Link></li>
               <li><Link to="/contact" className="hover:text-primary-600">طلب مساعدة</Link></li>
-              <li><Link to="/faq" className="hover:text-primary-600"> الاساله الشائعة</Link></li>
+              <li><Link to="/faq" className="hover:text-primary-600">الأسئلة الشائعة</Link></li>
             </ul>
           </div>
 
@@ -196,7 +201,7 @@ export default function Landing() {
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-6 mt-16 pt-8 border-t border-slate-100 dark:border-slate-800/50 text-center">
-          <p className="text-xs text-slate-400 font-black uppercase tracking-[0.2em]">
+          <p className="text-xs text-slate-400 font-black uppercase tracking-[0.2em] font-display">
             © {new Date().getFullYear()} SENTRYK PRO. BY DEVELOPERS FOR EDUCATORS
           </p>
         </div>
