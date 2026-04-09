@@ -6,7 +6,9 @@ import {
   BookOpen,
   CalendarClock,
   CreditCard,
+  Download,
   MessageSquare,
+  Smartphone,
   TrendingDown,
   TrendingUp,
   Users,
@@ -17,9 +19,110 @@ import {
 import { useEffect, useState } from 'react';
 import api from '../../api/axios';
 
-// --- المكونات الفرعية ---
+// --- تعريف الواجهات (Interfaces) لحل أخطاء TypeScript ---
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: string[];
+  readonly userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed';
+    platform: string;
+  }>;
+  prompt(): Promise<void>;
+}
 
-// مكون النافذة المنبثقة (Modal)
+// --- مكون توست التثبيت الأسطوري ---
+const InstallAppToast = () => {
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
+
+  useEffect(() => {
+    // 1. التحقق مما إذا كان المستخدم يفتح الموقع بالفعل كتطبيق مثبت
+    const checkIsInstalled = () => {
+      const isPWA = window.matchMedia('(display-mode: standalone)').matches 
+                    || (window.navigator as any).standalone 
+                    || document.referrer.includes('android-app://');
+      setIsStandalone(isPWA);
+    };
+
+    checkIsInstalled();
+
+    // 2. الاستماع لحدث التثبيت
+    const handler = (e: any) => {
+      // إذا كان مثبتاً بالفعل لا تظهر التوست
+      if (isStandalone) return;
+      
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+      
+      // إظهار التوست بعد 5 ثوانٍ من دخول لوحة التحكم لضمان الانتباه
+      const timer = setTimeout(() => setIsVisible(true), 5000);
+      return () => clearTimeout(timer);
+    };
+
+    window.addEventListener('beforeinstallprompt' as any, handler);
+    return () => window.removeEventListener('beforeinstallprompt' as any, handler);
+  }, [isStandalone]);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    await deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setIsVisible(false);
+    }
+    setDeferredPrompt(null);
+  };
+
+  return (
+    <AnimatePresence>
+      {isVisible && !isStandalone && (
+        <motion.div
+          initial={{ y: 100, opacity: 0, scale: 0.9 }}
+          animate={{ y: 0, opacity: 1, scale: 1 }}
+          exit={{ y: 100, opacity: 0, scale: 0.9 }}
+          className="fixed bottom-8 left-4 right-4 md:left-auto md:right-8 md:w-[450px] z-[200] pointer-events-none"
+        >
+          <div className="bg-white/80 dark:bg-slate-900/90 backdrop-blur-2xl border border-slate-200 dark:border-white/10 shadow-[0_25px_70px_rgba(0,0,0,0.4)] rounded-[2.5rem] p-6 flex items-center gap-5 relative overflow-hidden pointer-events-auto border-b-4 border-b-primary-600">
+            {/* تأثير ضوئي خلفي */}
+            <div className="absolute -right-20 -bottom-20 w-40 h-40 bg-primary-600/10 rounded-full blur-3xl" />
+            
+            <div className="relative">
+              <div className="bg-gradient-to-br from-primary-600 to-indigo-700 p-4 rounded-[1.5rem] text-white shadow-xl relative border border-white/20">
+                <Smartphone size={28} />
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-900" />
+              </div>
+            </div>
+
+            <div className="flex-1 text-right">
+              <h4 className="text-lg font-black dark:text-white leading-tight">نسخة سطح المكتب</h4>
+              <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                ثبت Sentryk كبرنامج مستقل للوصول السريع وتحسين الأداء الإداري.
+              </p>
+            </div>
+
+            <button
+              onClick={handleInstallClick}
+              className="bg-slate-950 dark:bg-white text-white dark:text-slate-950 px-5 py-3.5 rounded-2xl text-xs font-black hover:bg-primary-600 hover:text-white dark:hover:bg-primary-600 dark:hover:text-white transition-all shadow-lg flex items-center gap-2 whitespace-nowrap active:scale-95"
+            >
+              <Download size={16} />
+              تثبيت
+            </button>
+
+            <button 
+              onClick={() => setIsVisible(false)}
+              className="absolute top-4 left-5 text-slate-400 hover:text-rose-500 transition-colors"
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+// --- المكونات الفرعية الحالية (بدون تغيير) ---
+
 const StudentsModal = ({ isOpen, onClose, title, students, type }: any) => (
   <AnimatePresence>
     {isOpen && (
@@ -38,7 +141,6 @@ const StudentsModal = ({ isOpen, onClose, title, students, type }: any) => (
           className="bg-white dark:bg-slate-900 w-full max-w-4xl max-h-[80vh] rounded-[3rem] shadow-2xl relative z-10 overflow-hidden border border-slate-200 dark:border-slate-800 flex flex-col"
           dir="rtl"
         >
-          {/* Header */}
           <div className="p-6 md:p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/20">
             <div className="flex items-center gap-4">
               <div className={`p-3 rounded-2xl ${type === 'expiry' ? 'bg-rose-500/10 text-rose-600' : 'bg-slate-500/10 text-slate-600'}`}>
@@ -56,8 +158,6 @@ const StudentsModal = ({ isOpen, onClose, title, students, type }: any) => (
               <X size={20} />
             </button>
           </div>
-
-          {/* Content */}
           <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-4">
             {students && students.length > 0 ? (
               students.map((student: any, idx: number) => (
@@ -131,7 +231,6 @@ export default function Dashboard() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   
-  // States للـ Modals
   const [isExpiryModalOpen, setIsExpiryModalOpen] = useState(false);
   const [isExpiredModalOpen, setIsExpiredModalOpen] = useState(false);
   const [filteredStudents, setFilteredStudents] = useState<{ expiry: any[], expired: any[] }>({ expiry: [], expired: [] });
@@ -143,8 +242,7 @@ export default function Dashboard() {
         if (res.data.success) {
           setStats(res.data.stats);
           
-          // جلب بيانات الطلاب للتصفية في الـ Modals
-          const studentsRes = await api.get('/students?limit=1000'); // جلب الكل للتصفية المحلية
+          const studentsRes = await api.get('/students?limit=1000'); 
           if (studentsRes.data.success) {
             const allStudents = studentsRes.data.data;
             const now = new Date();
@@ -159,7 +257,6 @@ export default function Dashboard() {
             });
 
             const expired = allStudents.filter((s: any) => s.computedStatus === "EXPIRED");
-
             setFilteredStudents({ expiry, expired });
           }
         }
@@ -184,6 +281,9 @@ export default function Dashboard() {
   return (
     <div className="space-y-8 pb-10 px-2 md:px-0">
       
+      {/* توست التثبيت الذكي */}
+      <InstallAppToast />
+
       {/* Modals */}
       <StudentsModal 
         isOpen={isExpiryModalOpen} 
@@ -221,7 +321,6 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
         {/* Recent Activity */}
         <div className="lg:col-span-2">
           <div className="bg-white dark:bg-slate-900 rounded-[3rem] border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm h-full">
@@ -252,7 +351,6 @@ export default function Dashboard() {
 
         {/* Side Alerts */}
         <div className="space-y-6">
-          {/* Near Expiry Card */}
           <motion.div 
             whileHover={{ scale: 1.02 }}
             className="bg-rose-600 dark:bg-rose-600/20 p-8 rounded-[3.5rem] border border-rose-500/20 shadow-2xl shadow-rose-500/20 relative overflow-hidden group"
@@ -278,7 +376,6 @@ export default function Dashboard() {
             </div>
           </motion.div>
 
-          {/* Expired Stats */}
           <div className="bg-white dark:bg-slate-900 p-8 rounded-[3rem] border border-slate-200 dark:border-slate-800 shadow-sm">
             <h4 className="font-black dark:text-white mb-6 flex items-center gap-3 text-sm">
               <div className="w-2 h-6 bg-primary-500 rounded-full" />
@@ -311,7 +408,6 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );
