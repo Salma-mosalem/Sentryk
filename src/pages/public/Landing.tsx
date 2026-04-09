@@ -1,22 +1,27 @@
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowLeft,
   BadgePercent,
   BarChart3,
   BookOpen,
   CheckCircle2,
+  Download,
   GraduationCap,
   Mail,
   MessageSquare,
   Moon,
   MousePointerClick,
   ShieldAlert,
+  Smartphone,
   Sparkles,
   Sun,
-  Users
+  Users,
+  X
 } from 'lucide-react';
+// import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useThemeStore } from '../../store/useThemeStore';
+import React, { useState, useEffect } from 'react';
 
 const premiumFeatures = [
   {
@@ -51,17 +56,106 @@ const premiumFeatures = [
   }
 ];
 
+// --- مكون توست تثبيت التطبيق الأسطوري ---
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: string[];
+  readonly userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed';
+    platform: string;
+  }>;
+  prompt(): Promise<void>;
+}
+const InstallAppToast = () => {
+// نحدد أن الحالة إما أن تكون الحدث أو null
+const [deferredPrompt, setDeferredPrompt] = React.useState<BeforeInstallPromptEvent | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+useEffect(() => {
+    // تحديد نوع e هنا يحل المشكلة فوراً
+    const handler = (e: BeforeInstallPromptEvent) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      // يظهر بعد 4 ثواني من دخول الصفحة ليعطي فخامة
+      setTimeout(() => setIsVisible(true), 4000);
+    };
+
+    // نستخدم 'any' هنا فقط عند إضافة المستمع لأن الحدث غير قياسي في TypeScript
+    window.addEventListener('beforeinstallprompt' as any, handler as any);
+    
+    return () => {
+      window.removeEventListener('beforeinstallprompt' as any, handler as any);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') setIsVisible(false);
+    setDeferredPrompt(null);
+  };
+
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ y: 100, opacity: 0, scale: 0.9 }}
+          animate={{ y: 0, opacity: 1, scale: 1 }}
+          exit={{ y: 100, opacity: 0, scale: 0.9 }}
+          className="fixed bottom-6 left-6 right-6 md:left-auto md:right-10 md:w-[420px] z-[100] pointer-events-none"
+        >
+          <div className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.3)] rounded-[2.5rem] p-6 flex items-center gap-5 relative overflow-hidden pointer-events-auto backdrop-blur-2xl">
+            {/* زخرفة خلفية ضوئية */}
+            <div className="absolute -left-10 -top-10 w-32 h-32 bg-primary-600/10 rounded-full blur-3xl" />
+            
+            <div className="relative">
+              <div className="absolute inset-0 bg-primary-500 rounded-2xl animate-ping opacity-20"></div>
+              <div className="bg-gradient-to-br from-primary-600 to-indigo-700 p-4 rounded-2xl text-white shadow-xl relative border border-white/20">
+                <Smartphone size={28} />
+              </div>
+            </div>
+
+            <div className="flex-1">
+              <h4 className="text-lg font-black dark:text-white leading-none">تطبيق Sentryk</h4>
+              <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                ثبت المنصة الآن على هاتفك للوصول السريع وإدارة طلابك باحترافية كاملة.
+              </p>
+            </div>
+
+            <button
+              onClick={handleInstallClick}
+              className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3.5 rounded-2xl text-sm font-black hover:bg-primary-600 hover:text-white dark:hover:bg-primary-600 dark:hover:text-white transition-all shadow-lg active:scale-95 flex items-center gap-2 whitespace-nowrap"
+            >
+              <Download size={16} />
+              ثبته الآن
+            </button>
+
+            <button 
+              onClick={() => setIsVisible(false)}
+              className="absolute top-4 right-5 text-slate-400 hover:text-rose-500 transition-colors p-1"
+            >
+              <X size={20} />
+            </button>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
 export default function Landing() {
   const { darkMode, toggleTheme } = useThemeStore();
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#030712] transition-colors duration-500 overflow-hidden text-right font-sans" dir="rtl">
       
+      {/* استدعاء التوست هنا */}
+      <InstallAppToast />
+
       {/* --- Navbar --- */}
       <nav className="fixed top-0 w-full z-50 backdrop-blur-md border-b border-slate-200/50 dark:border-slate-800/50 bg-white/70 dark:bg-[#030712]/70">
         <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            {/* تحسين شكل اللوجو الاحترافي */}
             <div className="relative">
               <div className="absolute inset-0 bg-primary-500/20 blur-lg rounded-xl"></div>
               <div className="relative w-11 h-11 bg-primary-600 rounded-xl flex items-center justify-center shadow-xl shadow-primary-600/30 overflow-hidden border border-white/10 transition-transform hover:scale-105">
