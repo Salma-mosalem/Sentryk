@@ -195,6 +195,29 @@ export default function UsersPage() {
         </button>
       </div>
 
+      {/* Info Card Component */}
+      <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 p-5 rounded-2xl text-sm text-blue-900 dark:text-blue-300 font-bold leading-relaxed">
+        يتيح النظام مستويين مختلفين من الصلاحيات: <span className="font-black">الأدمن</span> و <span className="font-black">السكرتيرة</span>.
+        <br /><br />
+        
+        يمتلك <span className="font-black">الأدمن</span> صلاحيات كاملة داخل النظام، حيث يمكنه الوصول إلى جميع الصفحات 
+        وإدارة كافة البيانات بدون أي قيود.
+        
+        <br /><br />
+        
+        أما <span className="font-black">السكرتيرة</span> فلديها صلاحيات محدودة، حيث يمكنها الوصول فقط إلى 
+        صفحتي <span className="font-black">الطلاب</span> و <span className="font-black">المجموعات</span>.
+        
+        <br /><br />
+        
+        يمكن للسكرتيرة تعديل بيانات الطلاب، وتجديد الاشتراكات، وكذلك تعديل بيانات المجموعات، 
+        لكنها <span className="font-black">لا تستطيع حذف أي بيانات داخل النظام</span>.
+        
+        <br /><br />
+        
+        أي صفحات أخرى داخل لوحة التحكم تكون متاحة فقط لـ <span className="font-black">الأدمن</span> ولا يمكن للسكرتيرة الوصول إليها.
+      </div>
+
       {/* Stats & Search */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2 relative group">
