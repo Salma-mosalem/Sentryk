@@ -10,20 +10,21 @@ import {
     MessageSquare,
     ShieldCheck,
     Wallet,
-    Zap
+    Zap,
+    AlertTriangle // إضافة أيقونة التنبيه
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../../api/axios';
 import { useThemeStore } from '../../store/useThemeStore';
-import { useAuthStore } from '../../store/useAuthStore'; // إضافة الـ Store
+import { useAuthStore } from '../../store/useAuthStore';
 
 export default function Checkout() {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const { darkMode } = useThemeStore();
-    const { updateAuth, token } = useAuthStore(); // جلب وظيفة التحديث والتكن
+    const { updateAuth, token } = useAuthStore();
     const paymentId = searchParams.get('paymentId');
     
     const [copied, setCopied] = useState<string | null>(null);
@@ -61,7 +62,6 @@ export default function Checkout() {
                 setIsSuccess(true);
                 if (pollingInterval.current) clearInterval(pollingInterval.current);
                 
-                // --- الجزء المضاف لتحديث حالة الاشتراك فوراً في المتصفح ---
                 try {
                     const verifyRes = await api.get("/auth/verify-status");
                     if (verifyRes.data.success) {
@@ -70,7 +70,6 @@ export default function Checkout() {
                 } catch (e) {
                     console.error("فشل تحديث بيانات الجلسة محلياً");
                 }
-                // -------------------------------------------------------
 
                 toast.success("تم تأكيد الدفع بنجاح!");
                 
@@ -114,7 +113,7 @@ export default function Checkout() {
     const accounts = {
         vodafone: "01032102047",
         bankName: "البنك التجاري الدولي (CIB)",
-        iban: "EG123456789012345678901234567", // آيبان تجريبي
+        iban: "EG123456789012345678901234567",
         accountName: "شركة سمارت للحلول البرمجية"
     };
 
@@ -232,6 +231,28 @@ export default function Checkout() {
                         animate={{ x: 0, opacity: 1 }}
                         className="lg:col-span-7 space-y-6"
                     >
+                        {/* رسالة التنبيه المضافة حديثاً */}
+                        <motion.div 
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-500/50 rounded-[2rem] p-5 md:p-6 flex items-start gap-4 shadow-lg shadow-amber-500/10"
+                        >
+                            <div className="bg-amber-500 p-2 rounded-xl text-white mt-1 shrink-0">
+                                <AlertTriangle size={24} />
+                            </div>
+                            <div>
+                                <h4 className="text-lg md:text-xl font-black text-amber-800 dark:text-amber-400 mb-1">
+                                    تنبيه هام جداً
+                                </h4>
+                                <p className="text-sm md:text-base font-bold text-amber-700 dark:text-amber-300 leading-relaxed">
+                                    يرجى أخذ <span className="underline decoration-2">لقطة شاشة (Screenshot)</span> لرسالة تأكيد الدفع وإرسالها عبر زر الواتساب بالأسفل. 
+                                    <span className="block mt-1 text-xs md:text-sm opacity-90 font-black">
+                                        * في حال عدم إرسال الصورة لن نتمكن من تفعيل العملية يدوياً إذا تأخر النظام.
+                                    </span>
+                                </p>
+                            </div>
+                        </motion.div>
+
                         {/* Vodafone Cash */}
                         <div className="relative group overflow-hidden bg-[#ee0000] rounded-[2.5rem] p-0.5 shadow-xl transition-transform hover:scale-[1.01]">
                             <div className="bg-[#ee0000] p-6 md:p-8 rounded-[2.3rem] relative overflow-hidden">
