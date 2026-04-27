@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /contact
+Allow: /faq
+Allow: /policy
+
+# منع أرشفة لوحة التحكم لأنها محمية ولا تهم الزائر العادي
+Disallow: /dashboard
+Disallow: /login
+Disallow: /signup
+Disallow: /plans
+Disallow: /subjects
+Disallow: /students
+Disallow: /groups
+Disallow: /users
+Disallow: /sms-wallet
+Disallow: /activity-log
+Disallow: /contact-dash
+Disallow: /settings
+Disallow: /checkout
+
+Sitemap: https://sentryk.vercel.app/sitemap.xml
