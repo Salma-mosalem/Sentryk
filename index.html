@@ -1,145 +1,152 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
   <head>
-    <meta name="google-site-verification" content="ljyuMrBPD31OHqHRc2rZLetAfkrLgwKReHIkMIrimFs" />
+    <!-- ========================================== -->
+    <!-- التكوين الأساسي وضبط الشاشات (Core Config) -->
+    <!-- ========================================== -->
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
-
-    <link rel="apple-touch-icon" href="/favicon.svg" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.svg" />
-
-    <link rel="manifest" href="/manifest.json" />
-
-    <!-- Canonical -->
+    <meta name="google-site-verification" content="ljyuMrBPD31OHqHRc2rZLetAfkrLgwKReHIkMIrimFs" />
+    
+    <!-- ========================================== -->
+    <!-- تحسين محركات البحث الأساسي (Standard SEO)  -->
+    <!-- ========================================== -->
+    <title>SENTRYK | نظام إدارة السناتر التعليمية المتكامل والذكي</title>
+    <meta name="title" content="SENTRYK | نظام إدارة السناتر التعليمية المتكامل والذكي" />
+    <meta name="description" content="سنترك (SENTRYK) هو نظام SaaS سحابي متكامل لإدارة مراكز الدروس والسناتر التعليمية. يوفر نظاماً ذكياً للصلاحيات (أدمن وسكرتارية)، وإدارة الطلاب والاشتراكات بالألوان، ومجموعات مرنة، ونظام رسائل SMS تلقائي، وبوابة دفع Paymob، بالإضافة إلى سجل نشاط متكامل وتقارير مالية دقيقة." />
+    <meta name="keywords" content="إدارة سناتر تعليمية، نظام إدارة دروس، تنظيم طلاب، سكرتارية مدرسين، رسائل SMS للطلاب، حضور وانصراف، تقارير مالية، سنترك، Sentryk، لوحة تحكم أدمن، نظام سحابي للتعليم، SaaS تعليمي مصر، دفع إلكتروني Paymob، إدارة مجموعات فرعية، Prisma PostgreSQL SaaS" />
+    
+    <!-- ========================================== -->
+    <!-- حقوق الملكية والكاتب (Author & Copyright)  -->
+    <!-- ========================================== -->
+    <meta name="author" content="Youssef Ahmed Mossallem" />
+    <meta name="creator" content="Youssef Ahmed Mossallem" />
+    <meta name="publisher" content="Youssef Ahmed Mossallem" />
+    <meta name="copyright" content="Sentryk & Youssef Ahmed Mossallem" />
+    <meta name="owner" content="Youssef Ahmed Mossallem" />
+    <meta name="reply-to" content="youssef.mossallem.dev@gmail.com" />
+    
+    <!-- سياسات الأرشفة والزحف الذكي -->
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
     <link rel="canonical" href="https://sentryk.vercel.app/" />
 
-    <!-- SEO -->
-    <title>SENTRYK</title>
-
-    <meta
-      name="title"
-      content="SENTRYK | نظام إدارة السناتر التعليمية وإدارة الطلاب والدروس"
-    />
-
-    <meta
-      name="description"
-      content="SENTRYK هو نظام متكامل لإدارة السناتر التعليمية يشمل إدارة الطلاب، الحضور والانصراف، الرسائل SMS، التقارير المالية وتنظيم الدروس بسهولة واحترافية."
-    />
-
-    <meta
-      name="keywords"
-      content="إدارة سناتر تعليمية, نظام إدارة دروس, تنظيم طلاب, سكرتارية مدرسين, رسائل SMS للطلاب, حضور وانصراف, تقارير مالية, سنترك, Sentryk"
-    />
-
-    <meta name="author" content="Youssef Mossallem | Sentryk Team" />
-    <meta name="robots" content="index, follow" />
-
-    <!-- Open Graph -->
+    <!-- ========================================== -->
+    <!-- بروتوكول الرسم البياني المفتوح (Open Graph)-->
+    <!-- ========================================== -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://sentryk.vercel.app/" />
-
-    <meta
-      property="og:title"
-      content="SENTRYK | نظام إدارة السناتر التعليمية"
-    />
-
-    <meta
-      property="og:description"
-      content="نظام احترافي لإدارة السناتر التعليمية: إدارة الطلاب، الحضور، الرسائل SMS، والتقارير المالية بدقة وسهولة."
-    />
-
-    <meta
-      property="og:image"
-      content="https://sentryk.vercel.app/og-image.png"
-    />
-
-    <meta
-      property="og:image:secure_url"
-      content="https://sentryk.vercel.app/og-image.png"
-    />
-
+    <meta property="og:title" content="SENTRYK | نظام إدارة السناتر ومراكز الدروس الخصوصية" />
+    <meta property="og:description" content="أدر سنترك التعليمي باحترافية وأمان: تتبع الطلاب واشتراكاتهم، أتمتة رسائل الـ SMS، تفعيل اشتراكات Paymob، ومتابعة سجلات النشاط والتقارير المالية لحظة بلحظة." />
+    <meta property="og:image" content="https://sentryk.vercel.app/og-image.png" />
+    <meta property="og:image:secure_url" content="https://sentryk.vercel.app/og-image.png" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-
+    <meta property="og:image:alt" content="Sentryk SaaS Platform Dashboard Preview" />
     <meta property="og:site_name" content="Sentryk" />
     <meta property="og:locale" content="ar_EG" />
 
-    <!-- Twitter -->
+    <!-- ========================================== -->
+    <!-- كروت تويتر والانتشار (Twitter Cards)      -->
+    <!-- ========================================== -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://sentryk.vercel.app/" />
+    <meta name="twitter:title" content="SENTRYK | نظام إدارة السناتر التعليمية" />
+    <meta name="twitter:description" content="الحل الأمثل لأصحاب السناتر والمدرسين: إدارة مستخدمين متعددة الأدوار، تجديد اشتراكات بضغطة زر، وإرسال SMS تلقائي لربط أولياء الأمور بالمستجدات." />
+    <meta name="twitter:image" content="https://sentryk.vercel.app/og-image.png" />
 
-    <meta
-      name="twitter:url"
-      content="https://sentryk.vercel.app/"
-    />
-
-    <meta
-      name="twitter:title"
-      content="SENTRYK | نظام إدارة السناتر التعليمية"
-    />
-
-    <meta
-      name="twitter:description"
-      content="إدارة السناتر التعليمية بسهولة: تنظيم الطلاب، الحضور، الرسائل SMS، والتقارير المالية."
-    />
-
-    <meta
-      name="twitter:image"
-      content="https://sentryk.vercel.app/og-image.png"
-    />
-
-    <!-- Theme -->
+    <!-- ========================================== -->
+    <!-- الأيقونات وتوافق الأجهزة الفاخرة (Icons/PWA)-->
+    <!-- ========================================== -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#030712" />
 
-    <!-- PWA -->
+    <!-- إعدادات شريط الحالة وأنظمة آبل وموبايل -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Sentryk" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
     <meta name="format-detection" content="telephone=no" />
 
-    <!-- Fonts preload -->
- <!-- استدعاء خط Readex Pro بجميع أوزانه -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- ========================================== -->
+    <!-- خطوط وتنسيقات الأداء العالي (Fonts & Performance)-->
+    <!-- ========================================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
 
-<style>
-  /* لمسة إضافية عشان الرواق: تظبيط شكل الحروف العربي */
-  body {
-    letter-spacing: -0.01em; /* بيخلي شكل الخط التقني أحلى */
-  }
-</style>
-
-    <!-- Structured Data -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "SENTRYK",
-        "applicationCategory": "BusinessApplication",
-        "operatingSystem": "Web",
-        "url": "https://sentryk.vercel.app",
-        "description": "نظام احترافي لإدارة السناتر التعليمية يشمل إدارة الطلاب والحضور والرسائل والتقارير المالية.",
-        "author": {
-          "@type": "Person",
-          "name": "Youssef Mossallem"
-        }
+    <style>
+      body { 
+        letter-spacing: -0.01em; 
+        font-family: 'Readex Pro', sans-serif; 
+        background-color: #030712; 
       }
-    </script>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-P146P6T3M5"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    </style>
 
-  gtag('config', 'G-P146P6T3M5');
-</script>
+    <!-- ========================================== -->
+    <!-- البيانات المنظمة الفائقة (Advanced JSON-LD Schema)-->
+    <!-- ========================================== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://sentryk.vercel.app/#software",
+          "name": "SENTRYK",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "Web",
+          "url": "https://sentryk.vercel.app",
+          "description": "نظام SaaS متكامل لإدارة السناتر التعليمية ومراكز الدروس، مع ميزات الفوترة والاشتراكات المتعددة ونظام الرسائل القصيرة وإدارة الأدوار والصلاحيات للأدمن والسكرتارية.",
+          "applicationSubCategory": "Educational Management System",
+          "offers": {
+            "@type": "AggregateOffer",
+            "priceCurrency": "EGP",
+            "price": "0",
+            "description": "يوفر النظام فترة تجريبية مجانية لمدة 14 يوماً مع خيارات اشتراك شهري وسنوي مرنة."
+          },
+          "author": {
+            "@id": "https://sentryk.vercel.app/#creator"
+          },
+          "featureList": [
+            "نظام صلاحيات متعدد (أدمن وسكرتارية)",
+            "إدارة الطلاب الذكية والاشتراكات الملونة",
+            "تسعير المواد والمراحل التعليمية بمرونة",
+            "نظام المجموعات الرئيسي والفرعي",
+            "محفظة ورسائل SMS تلقائية عند التسجيل والتجديد",
+            "بوابة دفع متكاملة Paymob",
+            "لوحة تحكم وتقارير مالية متقدمة مقارنة بالشهر السابق",
+            "سجل نشاط كامل للعمليات للحماية والأمان"
+          ]
+        },
+        {
+          "@type": "Person",
+          "@id": "https://sentryk.vercel.app/#creator",
+          "name": "Youssef Ahmed Mossallem",
+          "jobTitle": "Full-Stack Web3 & Software Engineer",
+          "url": "https://github.com/youssefmossallem",
+          "sameAs": [
+            "https://sentryk.vercel.app"
+          ]
+        }
+      ]
+    }
+    </script>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-P146P6T3M5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-P146P6T3M5');
+    </script>
   </head>
 
   <body>
@@ -148,7 +155,7 @@
         <img
           src="/favicon.svg"
           alt="Sentryk Loading"
-          style="width: 64px; height: 64px; animation: pulse 2s infinite;"
+          style="width: 64px; height: height: 64px; animation: pulse 2s infinite;"
         />
       </div>
     </div>
